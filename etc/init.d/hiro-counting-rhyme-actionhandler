@@ -19,9 +19,9 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-prog=autopilot-counting-rhyme-actionhandler.py
+prog=hiro-counting-rhyme-actionhandler.py
 SCL=hiro_integration
-pidfile=/var/run/autopilot-counting-rhyme-actionhandler.pid
+pidfile=/var/run/hiro-counting-rhyme-actionhandler.pid
 RETVAL=0
 
 
