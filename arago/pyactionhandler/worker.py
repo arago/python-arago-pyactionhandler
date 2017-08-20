@@ -9,6 +9,10 @@ class Message(object):
 	def __init__(self, msg):
 		self.msg = msg
 
+class WorkerShutdown(Exception):
+	def __init__(self):
+		super().__init__("Worker is about to be shutdown")
+
 class Worker(object):
 	def __init__(self, collection, node, response_queue, size=10, max_idle=300):
 		self.logger = logging.getLogger('root')
@@ -19,6 +23,7 @@ class Worker(object):
 		self.pool = gevent.pool.Pool(size=size)
 		self.listener = gevent.spawn(self.handle_actions)
 		self.max_idle=max_idle
+		self.shutdown_in_progress=False
 		self.idle=gevent.spawn(self.timeout)
 		gevent.idle()
 		self.logger.info("New Worker for {node} created at {time}, can handle {size} tasks in parallel".format(
@@ -36,9 +41,12 @@ class Worker(object):
 			gevent.idle()
 
 	def add_action(self, action):
+		if self.shutdown_in_progress:
+			raise WorkerShutdown()
 		self.task_queue.put(action)
 		self.logger.debug("[{anum}] Put Action on Worker queue for {node}".format(anum=action.num, node=self.node))
 	def shutdown(self):
+		self.shutdown_in_progress=True
 		self.task_queue.join()
 		self.task_queue.put(Message("shutdown"))
 		self.task_queue.join()
