@@ -7,6 +7,7 @@ from arago.pyactionhandler.action import FailedAction
 import sys
 import logging
 import traceback
+from weakref import WeakValueDictionary
 
 class WorkerCollection(object):
 	def __init__(self, capabilities, parallel_tasks=10, parallel_tasks_per_worker=10, worker_max_idle=300):
@@ -15,7 +16,7 @@ class WorkerCollection(object):
 		self.parallel_tasks=parallel_tasks
 		self.parallel_tasks_per_worker=parallel_tasks_per_worker
 		self.worker_max_idle=worker_max_idle
-		self.workers = {}
+		self.workers = WeakValueDictionary()
 		self.task_queue=gevent.queue.JoinableQueue(maxsize=0)
 
 	def register_response_queue(self, response_queue):
