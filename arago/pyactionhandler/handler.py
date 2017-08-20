@@ -94,9 +94,6 @@ class SyncHandler(object):
 		try:
 			self.logger.info("Started handling requests")
 			while True:
-				if self.worker_collection.task_queue.unfinished_tasks >= self.worker_collection.parallel_tasks:
-					gevent.sleep(0.001)
-					continue
 				try:
 					anum, capability, timeout, params, zmq_info = self.next_request()
 				except (DecodeRPCError):

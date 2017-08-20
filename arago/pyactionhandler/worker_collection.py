@@ -13,11 +13,10 @@ class WorkerCollection(object):
 	def __init__(self, capabilities, parallel_tasks=10, parallel_tasks_per_worker=10, worker_max_idle=300):
 		self.logger = logging.getLogger('root')
 		self.capabilities=capabilities
-		self.parallel_tasks=parallel_tasks
 		self.parallel_tasks_per_worker=parallel_tasks_per_worker
 		self.worker_max_idle=worker_max_idle
 		self.workers = WeakValueDictionary()
-		self.task_queue=gevent.queue.JoinableQueue(maxsize=0)
+		self.task_queue=gevent.queue.JoinableQueue(maxsize=parallel_tasks)
 
 	def register_response_queue(self, response_queue):
 		self.response_queue=response_queue
