@@ -24,7 +24,7 @@ class WorkerCollection(object):
 		self.logger.info("Registered worker collection for {caps}".format(caps=", ".join(self.capabilities.keys())))
 
 	def get_worker(self, NodeID):
-		if NodeID not in self.workers:
+		if NodeID not in self.workers or self.workers[NodeID].shutdown_in_progress:
 			self.workers[NodeID] = Worker(
 				self, NodeID, self.response_queue,
 				self.parallel_tasks_per_worker,
