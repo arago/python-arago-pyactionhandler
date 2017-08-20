@@ -102,6 +102,7 @@ class SyncHandler(object):
 				try:
 					anum, capability, timeout, params, zmq_info = self.next_request()
 				except (DecodeRPCError):
+					self.logger.error("Could not decode request, skipping!")
 					continue
 				self.worker_collection.task_queue.put(
 					(anum, capability, timeout, params, zmq_info))
