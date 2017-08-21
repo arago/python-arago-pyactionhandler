@@ -34,9 +34,11 @@ class WorkerCollection(object):
 		self.workers = {n: w for n, w in self.workers.items() if w is not worker}
 
 	def shutdown_workers(self):
-		#self.task_queue.join()
-		for n,w in self.workers.items():
-			w.shutdown()
+		self.task_queue.join()
+		items = list(self.workers.values())
+		for i in items:
+			i.shutdown()
+		del items
 
 	def handle_requests_per_worker(self):
 		self.logger.info("Started forwarding requests")

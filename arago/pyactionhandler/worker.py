@@ -29,15 +29,14 @@ class Worker(object):
 		self.logger.info("New Worker for {node} created at {time}, can handle {size} tasks in parallel".format(
 			node=self.node,time=time.strftime("%H:%M:%S", time.localtime()),size=size))
 
-	def touch(self):
-		self.idle.kill()
-
 	def timeout(self):
 		try:
 			gevent.sleep(self.max_idle)
 			self.shutdown()
 		except GreenletExit:
-			self.idle=gevent.spawn(self.timeout)
+			if not self.shutdown_in_progress:
+				self.idle=gevent.spawn(self.timeout)
+		finally:
 			gevent.idle()
 
 	def add_action(self, action):
@@ -45,11 +44,14 @@ class Worker(object):
 			raise WorkerShutdown()
 		self.task_queue.put(action)
 		self.logger.debug("[{anum}] Put Action on Worker queue for {node}".format(anum=action.num, node=self.node))
+
 	def shutdown(self):
 		self.shutdown_in_progress=True
-		self.task_queue.join()
-		self.task_queue.put(Message("shutdown"))
-		self.task_queue.join()
+		if self.listener:
+			self.task_queue.put(Message("shutdown"))
+		if self.idle:
+			self.idle.kill()
+		self.logger.info("Worker for %s shutdown" % self.node)
 
 	def handle_actions(self):
 		while True:
@@ -58,11 +60,11 @@ class Worker(object):
 				if item.msg=="shutdown":
 					break
 			else:
-				self.touch()
+				self.idle.kill()
 				self.pool.spawn(self.run_action(item))
-		#self.collection.remove_worker(self)
-		self.logger.info("Worker for %s shutdown" % self.node)
+		self.pool.join()
 		self.task_queue.task_done()
+		self.task_queue.join()
 
 	def run_action(self, action):
 		try:
@@ -81,7 +83,7 @@ class Worker(object):
 			self.logger.warning("[{anum}] Execution of {action} timed out after {to} seconds.".format(
 				anum=action.num, action=action, to=action.timeout))
 		finally:
-			self.touch()
+			self.idle.kill()
 			self.task_queue.task_done()
 			self.collection.task_queue.task_done()
 			self.logger.debug("[{anum}] Removed Action from Worker queue for {node}".format(
