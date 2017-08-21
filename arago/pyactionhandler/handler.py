@@ -63,16 +63,13 @@ class SyncHandler(object):
 
 	def shutdown(self):
 		gevent.kill(self.input_loop)
-		gevent.idle()
 		self.worker_collection.shutdown_workers()
 		self.logger.info("Waiting for all workers to shutdown...")
 		while len(self.worker_collection.workers) > 0:
 			self.logger.debug("{num} worker(s) still active".format(num=len(self.worker_collection.workers)))
 			gevent.sleep(1)
 		self.logger.info("Waiting for all responses to be delivered...")
-		while self.response_queue.unfinished_tasks > 0:
-			self.logger.debug("{num} responses to be delivered".format(num=self.response_queue.unfinished_tasks))
-			gevent.sleep(1)
+		self.response_queue.join()
 		gevent.kill(self.output_loop)
 		self.logger.info("ActionHandler shut down, {num} actions processed".format(num=next(self.counter)-1))
 
@@ -96,9 +93,6 @@ class SyncHandler(object):
 		try:
 			self.logger.info("Started handling requests")
 			while True:
-				if self.worker_collection.task_queue.unfinished_tasks >= self.worker_collection.parallel_tasks:
-					gevent.sleep(0.001)
-					continue
 				try:
 					anum, capability, timeout, params, zmq_info = self.next_request()
 				except (DecodeRPCError):
@@ -108,9 +102,18 @@ class SyncHandler(object):
 					(anum, capability, timeout, params, zmq_info))
 				self.logger.debug(
 					"[{anum}] Put Action on ActionHandler request queue".format(anum=anum))
+				del anum, capability, timeout, params, zmq_info
 		except GreenletExit as e:
+			try:
+				self.worker_collection.task_queue.put(
+					(anum, capability, timeout, params, zmq_info))
+				self.logger.debug(
+					"[{anum}] Put Action on ActionHandler request queue".format(anum=anum))
+			except UnboundLocalError:
+				pass
 			## Block all further incoming messages
 			self.logger.info("Stopped handling requests")
+			self.worker_collection.task_queue.join()
 
 	def handle_responses(self):
 		try:
@@ -125,11 +128,18 @@ class SyncHandler(object):
 				resp.statusmsg = action.statusmsg
 				resp.success = action.success
 				self.zmq_socket.send_multipart((id1, id2, svc_call, resp.SerializeToString()))
-				#self.worker_collection.task_queue.task_done()
 				del id1, id2, svc_call, resp
 				self.response_queue.task_done()
 				self.logger.debug("[{anum}] Removed Action from ActionHandler response queue".format(
 					anum=action.num))
 		except GreenletExit as e:
+			try:
+				self.zmq_socket.send_multipart((id1, id2, svc_call, resp.SerializeToString()))
+				self.response_queue.task_done()
+				self.logger.debug("[{anum}] Removed Action from ActionHandler response queue".format(
+					anum=action.num))
+			except UnboundLocalError:
+				pass
+			self.zmq_socket.close()
 			self.logger.info("Stopped handling responses")
 
