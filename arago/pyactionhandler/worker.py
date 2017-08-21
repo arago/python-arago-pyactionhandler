@@ -51,7 +51,6 @@ class Worker(object):
 			self.task_queue.put(Message("shutdown"))
 		if self.idle:
 			self.idle.kill()
-		self.logger.info("Worker for %s shutdown" % self.node)
 
 	def handle_actions(self):
 		while True:
@@ -65,6 +64,7 @@ class Worker(object):
 		self.pool.join()
 		self.task_queue.task_done()
 		self.task_queue.join()
+		self.logger.info("Worker for %s shutdown" % self.node)
 
 	def run_action(self, action):
 		try:
