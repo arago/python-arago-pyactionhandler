@@ -403,7 +403,7 @@ Usage:
 
 Options:
   --debug            do not run as daemon and log to stderr
-  --pidfile=PIDFILE  Specify pid file [default: /var/run/{progname}.pid]
+  --pidfile=PIDFILE  Specify pid file [default: /var/run/counting-rhyme.pid]
   -h --help          Show this help screen
 """
 	...
