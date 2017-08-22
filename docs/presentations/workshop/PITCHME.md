@@ -4,7 +4,7 @@
 +++
 
 1. Overview: ActionHandlers, Capabilities and Applicabilities
-2. *External* ActionHandlers: Benefits over the built–in Generic ActionHandler
+2. *External* ActionHandlers: Benefits over the built–in Generic ActionHandler, HIRO Interface
 3. PyActionHandler module: Features and Usage
 4. Anatomy of an ActionHandler: How to develop a new ActionHandler
 
