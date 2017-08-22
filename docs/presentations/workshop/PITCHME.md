@@ -70,9 +70,9 @@ Which of the following examples are bad names and why?
 
 +++
 #### Parameters
-- ActionHandlers can specifiy mandatory and optional parameters
-- Optional parameters can have default values
-- Default values can be static or dynamically read from the MARS model
+- ActionHandlers can specifiy mandatory and optional parameters |
+- Optional parameters can have default values |
+- Default values can be static or dynamically read from the MARS model |
 
 +++
 
