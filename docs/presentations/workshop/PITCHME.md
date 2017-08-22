@@ -285,11 +285,9 @@ service ActionHandler_Service {
 ~~~python
 class CountingRhyme(object):
 	def __init__(self):
-		self.lines=[
-			"Eeny, meeny, miny, moe.",
-			"Catch a tiger by the toe.",
-			"If he hollers, let him go."
-		]
+		self.lines=["Eeny, meeny, miny, moe.",
+		            "Catch a tiger by the toe.",
+		            "If he hollers, let him go."]
 		self._current = 0
 
 	@property
@@ -302,10 +300,10 @@ rhyme = CountingRhyme()
 print(rhyme.current_line)
 ~~~
 @[2]
-@[3-7]
-@[8]
-@[11-14]
-@[16-17]
+@[3-5]
+@[6]
+@[9-12]
+@[14-15]
 
 +++
 ### Wrap it into a class derived from “Action”
@@ -408,6 +406,14 @@ Options:
   --pidfile=PIDFILE  Specify pid file [default: /var/run/{progname}.pid]
   -h --help          Show this help screen
 """
+	...
+~~~
+@[3-9]
+
++++
+
+~~~python
+	...
 
 	args=docopt(usage)
 	daemon = ActionHandlerDaemon(args['--pidfile'], debug=args['--debug'])
@@ -417,7 +423,7 @@ Options:
 	elif args['restart']: daemon.restart()
 	sys.exit(0)
 ~~~
-@[3-9]
-@[12]
-@[13]
-@[15-17]
+
+@[3]
+@[4]
+@[6-8]
