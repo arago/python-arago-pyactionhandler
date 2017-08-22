@@ -278,6 +278,7 @@ service ActionHandler_Service {
 +++
 ### Installation
 
++++
 ###### Activate the SCL channel/repository
 
 On RHEL, execute
@@ -293,6 +294,7 @@ On CentOS, execute
 yum -y install centos-release-scl-rh
 ~~~
 
++++
 ###### Add the hiro-contrib repository
 
 Add the following to your /etc/yum.repos.d/hiro.repo file:
@@ -307,14 +309,7 @@ enabled=1
 
 Replace USERNAME and PASSWORD with your repository credentials.
 
-💡For Free Edition: The repository credentials or the same as for your arago ID.
-
-💡For Enterprise Edition: You use your arago ID credentials. Usually the AI Projects team will provide you with a separate user for repository access.
-
-💡To use the online RPM repository the target servers need to be able to connect to tcp/443 on "repository.arago.de".
-
-❗️If your username/password contains special characters you must replace them with the proper URL encode character.
-
++++
 ###### Install the PyActionHandler module
 
 ~~~console
