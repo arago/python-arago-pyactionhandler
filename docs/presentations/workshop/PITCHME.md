@@ -429,6 +429,11 @@ Options:
 @[6-8]
 
 +++
+### Create an init script
+
+An example / template is included with the pyactionhandler module
+
++++
 ### Define Capability and Applicability for the HIRO Engine
 
 `/opt/autopilot/conf/external_actionhandlers/capabilities/counting-rhyme.yaml`
@@ -526,6 +531,13 @@ counting_rhyme_handler = SyncHandler(
 ~~~
 @[1-2]
 @[7]
+
++++
+### Packaging
+- CentOS / RHEL 6.x by default include only a very old Python (2.6.6) |
+- The pyactionhandler module requires Python 3.2 or newer |
+- Python 3.4.x and 3.5.x are available as “Software Collection” that can be installed in parallel |
+- Unfortunately, this makes packaging programs that depend on it bit more difficult |
 
 ---
 ## Learn more
