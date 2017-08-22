@@ -394,6 +394,7 @@ class ActionHandlerDaemon(Daemon):
 @[8]
 
 +++
+### Build a small command line interface for the daemon
 
 ~~~python
 if __name__ == "__main__":
@@ -423,7 +424,139 @@ Options:
 	elif args['restart']: daemon.restart()
 	sys.exit(0)
 ~~~
-
 @[3]
 @[4]
 @[6-8]
+
++++
+### Define Capability and Applicability for the HIRO Engine
+
+`/opt/autopilot/conf/external_actionhandlers/capabilities/counting-rhyme.yaml`
+
+~~~yaml
+- Applicability:
+    - Priotity: 100
+      ModelFilter:
+        - TrueFilter: {}
+  Capability:
+    - Name: "Rhyme"
+      Description: "Get one or more lines from a counting rhyme"
+      Parameter:
+        - Name: "Number"
+          Description: "The number of lines to get"
+          Mandatory: false
+~~~
+@[1-4]
+@[6-7]
+@[9-10]
+@[11]
+
++++
+### Configure the Engine to use the new ActionHandler
+
+`/opt/autopilot/conf/aae.yaml`
+
+~~~yaml
+ActionHandlers:
+  ActionHandler:
+    - URL: "tcp://127.0.0.1:7291"
+      SubscribeURL: ''
+      CapabilityYAML: "/opt/autopilot/conf/external_actionhandlers/capabilities/counting-rhyme.yaml"
+      RequestTimeout: 60
+~~~
+@[3]
+@[5]
+
++++
+### Encryption
+If the ActionHandler does not run on the same machine as the HIRO Engine, the communication should be encrypted.
+
++++
+#### Generating the encryption keys
+
+Server keypair
+
+~~~console
+$ /opt/rh/hiro_integration/root/usr/bin/create-zmq-keypair.sh
+public  key: J!umAeYQoVi>t]!26B}<x1<H-kXDR{zmX8wl1nz8
+private key: yL+!k7f@nevkyt[OD5r5bZ<C6>gZXIIc[?f]U^1L
+~~~
+
+Client Keypair
+
+~~~console
+$ /opt/rh/hiro_integration/root/usr/bin/create-zmq-keypair.sh
+public  key: 881Gr-9IOV0OZ-:.JQE>duS#vMkQJ5wSdkvFnqF5
+private key: ^gR.fnp%eh5U5f-G7TnC^ZLXZwk-G$s(G7s9?r((
+~~~
+
+Server = ActionHandler
+
+Client = HIRO Engine
+
++++
+#### HIRO Engine configuration
+
+~~~yaml
+ActionHandlers:
+  ActionHandler:
+    - URL: "tcp://127.0.0.1:7291"
+      SubscribeURL: ''
+      CapabilityYAML: "/opt/autopilot/conf/external_actionhandlers/capabilities/counting-rhyme.yaml"
+      RequestTimeout: 60
+      client-privatekey: "^gR.fnp%eh5U5f-G7TnC^ZLXZwk-G$s(G7s9?r(("
+      client-publickey: "881Gr-9IOV0OZ-:.JQE>duS#vMkQJ5wSdkvFnqF5"
+      server-publickey: "J!umAeYQoVi>t]!26B}<x1<H-kXDR{zmX8wl1nz8"
+~~~
+@[7-8]
+@[9]
+
++++
+#### ActionHandler
+
+~~~python
+server_public_key = b'J!umAeYQoVi>t]!26B}<x1<H-kXDR{zmX8wl1nz8'
+server_private_key = b'yL+!k7f@nevkyt[OD5r5bZ<C6>gZXIIc[?f]U^1L'
+
+counting_rhyme_handler = SyncHandler(
+	worker_collection,
+	zmq_url = 'tcp://*:7291'
+	auth = (server_public_key, server_private_key)
+)
+~~~
+@[1-2]
+@[7]
+
+---
+## Learn more
+
+### Links
+
++++
+#### HIRO & ActionHandlers
+
+https://docs.hiro.arago.co
+
+https://github.com/arago/python-arago-pyactionhandler
+
+https://github.com/arago/hiro-winrm-actionhandler
+
+https://github.com/arago/hiro-snow-actionhandler
+
+https://repository.arago.de/hiro-contrib/
+
++++
+#### 3rd–party components
+
+http://zeromq.org
+
+https://developers.google.com/protocol-buffers/
+
+http://www.gevent.org
+
+http://docopt.org
+
+### Presentation
+
+This presentation is available at http://bit.ly/actionhandler-workshop
+
