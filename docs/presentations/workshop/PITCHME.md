@@ -95,7 +95,7 @@ Which of the following examples are bad names and why?
     - Priority: 50
         ModelFilter:
           - Var:
-              Name: NodeMachineClass
+              Name: MachineClass
               Mode: string
               Value: Windows
           - Var:
@@ -111,6 +111,9 @@ Which of the following examples are bad names and why?
               Mode: le
               Value: 2
 ~~~
+@[4-7](MachineClass == "Windows")
+@[8-11](OSName == "Windows Server")
+@[12-15](OSMajorVersion >= 6)
 
 ---
 
