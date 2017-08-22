@@ -1,8 +1,16 @@
 ---
 # HIRO ActionHandlers
+
++++
+
+1. Overview: ActionHandlers, Capabilities and Applicabilities
+2. *External* ActionHandlers: Benefits over the built–in Generic ActionHandler
+3. PyActionHandler module: Features and Usage
+4. Anatomy of an ActionHandler: How to develop a new ActionHandler
+
 ---
 ## Overview
-What *is* and ActionHandler?
+What *is* an ActionHandler?
 
 +++
 ### ActionHandlers …
@@ -153,14 +161,17 @@ There can be multiple ActionHandlers that implement the same Capability.
 - <span class="fragment">Pick all ActionHandlers that provide the requested Capability</span>
 - <span class="fragment">Deselect all ActionHandlers with mandatory parameters not provided by the request</span>
 - <span class="fragment">Deselect all ActionHandlers who's Applicability does not match the current MARSNode</span>
-- <span class="fragment">ActionHandlers without an Applicability match all MARSNodes</span>
 - <span class="fragment">Order remaining ActionHandlers by *priority*</span>
 
 +++
 
-Learn more about Capabilities and Applicabilities in section *Installation & Configuration / Complete your Installation / Generic ActionHandler* in the HIRO documentation.
+Learn more about Capabilities and Applicabilities in section
 
-http://docs.hiro.arago.co
+*Installation & Configuration / Complete your Installation / Generic ActionHandler*
+
+in the HIRO documentation.
+
+https://docs.hiro.arago.co/
 
 ---
 
