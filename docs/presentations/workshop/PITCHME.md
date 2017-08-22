@@ -530,10 +530,8 @@ counting_rhyme_handler = SyncHandler(
 ---
 ## Learn more
 
-### Links
-
 +++
-#### HIRO & ActionHandlers
+### HIRO & ActionHandlers
 
 https://docs.hiro.arago.co
 
@@ -546,7 +544,7 @@ https://github.com/arago/hiro-snow-actionhandler
 https://repository.arago.de/hiro-contrib/
 
 +++
-#### 3rd–party components
+### 3rd–party components
 
 http://zeromq.org
 
