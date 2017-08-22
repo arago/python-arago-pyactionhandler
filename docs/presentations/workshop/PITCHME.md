@@ -170,8 +170,8 @@ There can be multiple ActionHandlers that implement the same Capability.
 
 The HIRO Engine has 2 ActionHandlers built–in:
 
-- the Generic ActionHandler
-- the IssueInputDataHandler
+- the Generic ActionHandler |
+- the IssueInputDataHandler |
 
 +++
 #### The Generic ActionHandler
@@ -221,8 +221,7 @@ http://zeromq.org
 - High-speed message queue |
 - Platform / language independed |
 - Asynchronous |
-- Many usage pattern like request–reply, router–dealer or publisher–subscriber |
-- Free software |
+- Many usage pattern like request–reply, router–dealer or publish–subscribe |
 
 +++
 #### Protocol buffers
@@ -279,3 +278,146 @@ service ActionHandler_Service {
 ---
 
 ## Creating an external ActionHandler
+
++++
+### Start with a piece of Python code
+
+~~~python
+class CountingRhyme(object):
+	def __init__(self):
+		self.lines=[
+			"Eeny, meeny, miny, moe.",
+			"Catch a tiger by the toe.",
+			"If he hollers, let him go."
+		]
+		self._current = 0
+
+	@property
+	def current_line(self):
+		line = self.lines[self._current]
+		self._current = (self._current + 1) % len(self.lines)
+		return line
+
+rhyme = CountingRhyme()
+print(rhyme.current_line)
+~~~
+@[2]
+@[3-7]
+@[8]
+@[11-14]
+@[16-17]
+
++++
+### Wrap it into a class derived from “Action”
+
+~~~python
+class CountingRhymeAction(Action):
+	def __init__(self, num, node, zmq_info, timeout, parameters, rhyme):
+		super().__init__(num, node, zmq_info, timeout, parameters)
+		self.rhyme = rhyme
+
+	def __call__(self):
+		self.output = self.rhyme.current_line
+		self.error_output = ""
+		self.system_rc = 0
+		self.statusmsg=""
+		self.success = True
+~~~
+@[1-2]
+@[3]
+@[4]
+@[6]
+@[7]
+@[8-10]
+@[11]
+
++++
+### Define the Capability
+
+~~~python
+capabilities = {
+	"Rhyme": Capability(CountingRhymeAction, rhyme=rhyme)
+}
+~~~
+
++++
+### Define a “WorkerCollection”
+
+~~~python
+worker_collection = WorkerCollection(
+	capabilities,
+	parallel_tasks = 10,
+	parallel_tasks_per_worker = 3,
+	worker_max_idle = 300,
+)
+~~~
+@[2]
+@[3]
+@[4]
+@[5]
+
++++
+### Define the ActionHandler and run it
+
+~~~python
+counting_rhyme_handler = SyncHandler(
+	worker_collection,
+	zmq_url = 'tcp://*:7291'
+)
+
+action_handlers = [counting_rhyme_handler]
+
+greenlets=[action_handler.run() for action_handler in action_handlers]
+gevent.idle()
+gevent.joinall(greenlets)
+~~~
+@[1]
+@[2]
+@[3]
+@[6]
+@[8]
+@[9-10]
+
++++
+### Wrap the whole thing into a Daemon
+
+~~~python
+class ActionHandlerDaemon(Daemon):
+	def run(self):
+		rhyme = CountingRhyme()
+
+		...
+
+		gevent.joinall(greenlets)
+		sys.exit(0)
+~~~
+@[1-2]
+@[3-7]
+@[8]
+
++++
+
+~~~python
+if __name__ == "__main__":
+	usage="""\
+Usage:
+  hiro-counting-rhyme-actionhandler [options] (start|stop|restart)
+
+Options:
+  --debug            do not run as daemon and log to stderr
+  --pidfile=PIDFILE  Specify pid file [default: /var/run/{progname}.pid]
+  -h --help          Show this help screen
+"""
+
+	args=docopt(usage)
+	daemon = ActionHandlerDaemon(args['--pidfile'], debug=args['--debug'])
+
+	if args['start']: daemon.start()
+	elif args['stop']: daemon.stop()
+	elif args['restart']: daemon.restart()
+	sys.exit(0)
+~~~
+@[3-9]
+@[12]
+@[13]
+@[15-17]
