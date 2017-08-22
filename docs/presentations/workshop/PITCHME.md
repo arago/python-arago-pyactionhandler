@@ -275,6 +275,52 @@ service ActionHandler_Service {
 - Built–in concurrency based on gevent |
 - Built–in queuing, per ActionHandler and per MARSNode |
 
++++
+### Installation
+
+###### Activate the SCL channel/repository
+
+On RHEL, execute
+
+~~~console
+subscription-manager repos --enable rhel-6-server-optional-rpms
+subscription-manager repos --enable rhel-server-rhscl-6-rpms
+~~~
+
+On CentOS, execute
+
+~~~console
+yum -y install centos-release-scl-rh
+~~~
+
+###### Add the hiro-contrib repository
+
+Add the following to your /etc/yum.repos.d/hiro.repo file:
+
+~~~ini
+[hiro-contrib]
+name=arago HIRO contributions
+baseurl=https://USERNAME:PASSWORD@repository.arago.de/hiro-contrib/centos/6/
+gpgcheck=0
+enabled=1
+~~~
+
+Replace USERNAME and PASSWORD with your repository credentials.
+
+💡For Free Edition: The repository credentials or the same as for your arago ID.
+
+💡For Enterprise Edition: You use your arago ID credentials. Usually the AI Projects team will provide you with a separate user for repository access.
+
+💡To use the online RPM repository the target servers need to be able to connect to tcp/443 on "repository.arago.de".
+
+❗️If your username/password contains special characters you must replace them with the proper URL encode character.
+
+###### Install the PyActionHandler module
+
+~~~console
+yum install hiro_integration-python-arago-pyactionhandler
+~~~
+
 ---
 
 ## Creating an external ActionHandler
