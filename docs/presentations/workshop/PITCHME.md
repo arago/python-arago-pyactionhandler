@@ -57,6 +57,7 @@ Which of the following examples are bad names and why?
 ##### `Query_MS_SQL`
 - <span class="fragment">debateable (again)</span>
 - <span class="fragment">in theory, SQL is a standardize language</span>
+- <span class="fragment">*sarcastic laughter*</span>
 - <span class="fragment">different dialects can also be handled by “applicability” and KI scope</span>
 
 +++
