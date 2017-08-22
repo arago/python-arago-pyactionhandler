@@ -61,6 +61,37 @@ Which of the following examples are bad names and why?
 - <span class="fragment">different dialects can also be handled by “applicability” and KI scope</span>
 
 +++
+#### Parameters
+- ActionHandlers can specifiy mandatory and optional parameters
+- Optional parameters can have default values
+- Default values can be static or dynamically read from the MARS model
+
++++
+
+~~~yaml
+- Applicability:
+  …
+  Capability:
+    - Name: ExecuteCommand
+        Description: "execute command on remote host"
+        Parameter:
+          - Name: Command
+              Description: "command to execute"
+              Mandatory: true
+          - Name: User
+              Description: "target user"
+              Default: root
+          - Name: Hostname
+              Description: "host to execute command on"
+              Default: ${FQDN}
+~~~
+@[4](Capability Name)
+@[5](Description)
+@[7-9](Mandatory parameter)
+@[10-12](Static default value)
+@[13-15](Dynamic default value)
+
++++
 ### Applicabilities …
 - <span class="fragment">describe a subset of the MARS model where an ActionHandler can be used</span>
 - <span class="fragment">same principle as the `On` section in a Knowledge Item</span>
@@ -80,7 +111,7 @@ Which of the following examples are bad names and why?
         <Var Mode="string" Name="MachineClass" Value="Windows" />
         <Var Mode="string" Name="OSName" Value="Windows Server" />
         <Var Mode="ge" Name="OSMajorVersion" Value="6" />
-        <Var Mode="le" Name="OSMinorVersion" Value="2" />
+        <Var Mode="ge" Name="OSMinorVersion" Value="2" />
     </On>
 </KI>
 ~~~
@@ -108,12 +139,28 @@ Which of the following examples are bad names and why?
               Value: 6
           - Var:
               Name: OSMinorVersion
-              Mode: le
+              Mode: ge
               Value: 2
 ~~~
 @[4-7](MachineClass == "Windows")
 @[8-11](OSName == "Windows Server")
 @[12-15](OSMajorVersion >= 6)
+
++++
+### How the HIRO Engine selects an ActionHandler
+There can be multiple ActionHandlers that implement the same Capability.
+
+- <span class="fragment">Pick all ActionHandlers that provide the requested Capability</span>
+- <span class="fragment">Deselect all ActionHandlers with mandatory parameters not provided by the request</span>
+- <span class="fragment">Deselect all ActionHandlers who's Applicability does not match the current MARSNode</span>
+- <span class="fragment">ActionHandlers without an Applicability match all MARSNodes</span>
+- <span class="fragment">Order remaining ActionHandlers by *priority*</span>
+
++++
+
+Learn more about Capabilities and Applicabilities in section *Installation & Configuration / Complete your Installation / Generic ActionHandler* in the HIRO documentation.
+
+http://docs.hiro.arago.co
 
 ---
 
