@@ -84,6 +84,9 @@ Which of the following examples are bad names and why?
     </On>
 </KI>
 ~~~
+@[6](MachineClass == "Windows")
+@[7](OSName == "Windows Server")
+@[8](OSMajorVersion >= 6)
 
 +++
 
