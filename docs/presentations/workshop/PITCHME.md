@@ -158,14 +158,34 @@ Which of the following examples are bad names and why?
 ### How the HIRO Engine selects an ActionHandler
 There can be multiple ActionHandlers that implement the same Capability.
 
++++
+
 - <span class="fragment">Pick all ActionHandlers that provide the requested Capability</span>
 - <span class="fragment">Deselect all ActionHandlers with mandatory parameters not provided by the request</span>
 - <span class="fragment">Deselect all ActionHandlers who's Applicability does not match the current MARSNode</span>
 - <span class="fragment">Order remaining ActionHandlers by *priority*</span>
 
 +++
+### Built–in Actionhandlers
 
-Learn more about Capabilities and Applicabilities in section
+The HIRO Engine has 2 ActionHandlers built–in:
+
+- the Generic ActionHandler
+- the IssueInputDataHandler
+
++++
+#### The Generic ActionHandler
+- Use existing command line tools as ActionHandler
+- Configure any number of Capabilities
+
++++
+#### The IssueInputDataHandler
+- Interact with cockpit users
+- Ask for input, approval etc.
+
++++
+
+Learn more about the Generic Actionhandler, Capabilities and Applicabilities in section
 
 *Installation & Configuration / Complete your Installation / Generic ActionHandler*
 
@@ -176,10 +196,85 @@ https://docs.hiro.arago.co/
 ---
 
 ## External ActionHandlers
+The Generic ActionHandler works fine, why deal with external ActionHandlers, anyway?
+
++++
+
+- “Complexity” or “You don't want to deal with SOAP in a bash oneliner |
+- Performance |
+- Queuing |
+- Keeping state |
+- Fallback Handlers |
+- Asynchronous ActionHandlers |
+
++++
+### How an external ActionHandler works
+
+- Runs as an external Daemon, possibly on another machine |
+- Listens on a ZeroMQ port for messages from the HIRO Engine |
+- Messages are encoded as protocol buffers (protobuf) |
+
++++
+#### ZeroMQ
+http://zeromq.org
+
+- High-speed message queue |
+- Platform / language independed |
+- Asynchronous |
+- Many usage pattern like request–reply, router–dealer or publisher–subscriber |
+- Free software |
+
++++
+#### Protocol buffers
+https://developers.google.com/protocol-buffers/
+
+- Messages are encoded to a binary “wire format” using a schema |
+- The protobuf compiler generates code to read and write these messages |
+- Official support for C++, Go, Java, C# and Python |
+- Unofficial implementations for many other languages |
+
++++
+##### Example
+
+~~~protobuf
+message ActionRequest {
+    required string capability = 1;
+    required int64 time_out = 2;
+    repeated KeyValueMessage params_list = 10;
+}
+
+message ActionResponse {
+    optional string output = 6;
+    optional string error_text = 7;
+    optional int32 system_rc = 8;
+    required string statusmsg = 3;
+    required bool success = 9;
+}
+
+service ActionHandler_Service {
+    rpc PerformAction(ActionRequest) returns (ActionResponse);
+}
+~~~
+@[1-5](ActionRequest message definition)
+@[7-13](ActionResponse message definition)
+@[15-17](RPC service definition)
 
 ---
 
-## PyActionHandler module features & usage
+## PyActionHandler module features
+
++++
+### Why Python?
+- Easy to learn |
+- Fast development cycle |
+- Huge amount of simple to use 3rd–party modules that cover almost any usecase |
+
++++
+### Features
+- Takes care of all communication with the HIRO Engine, including encryption |
+- Automatically handles errors, timeouts etc. |
+- Built–in concurrency based on gevent |
+- Built–in queuing, per ActionHandler and per MARSNode |
 
 ---
 
