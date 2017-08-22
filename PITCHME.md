@@ -26,6 +26,9 @@ print(rhyme.current_line)
 ```
 
 @[1](class creation)
+@[2-8](constructor)
+@[10-15](getter)
+@[17-18](Startup)
 
 ---
 
