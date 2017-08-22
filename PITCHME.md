@@ -43,18 +43,18 @@ Bad names prevent KI reusability
 Which of the following examples are bad names and why?
 
 +++
-##### `ExecuteRemoteCommand`
+##### `Execute_Remote_Command`
 - <span class="fragment">Nothing particulary bad about the name</span>
 - <span class="fragment">For historic reasons, this is already covered by `ExecuteCommand`</span>
 
 +++
-##### `ExecuteCommandOnJumpserver`
+##### `Execute_Command_On_Jumpserver`
 - <span class="fragment">debateable</span>
 - <span class="fragment">does not describe the *how*, but the *what*</span>
-- <span class="fragment">KnowledgeItems that use this capability will probably not be of any use in environments lacking a jumpserver, anyway</span>
+- <span class="fragment">KnowledgeItems may not be of any use in environments lacking a jumpserver, anyway</span>
 
 +++
-##### `QueryMSSQL`
+##### `Query_MS_SQL`
 - <span class="fragment">debateable (again)</span>
 - <span class="fragment">in theory, SQL is a standardize language</span>
 - <span class="fragment">different dialects can also be handled by “applicability” and KI scope</span>
