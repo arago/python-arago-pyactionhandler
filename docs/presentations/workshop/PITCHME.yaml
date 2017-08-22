@@ -2,4 +2,4 @@ theme : moon
 logo : docs/presentations/assets/hiro-logo.png
 highlight : solarized-dark
 slide-number: true
-footnote : "arago.co | github.com/arago/python-arago-pyactionhandler"
+footnote : "<span style='font-size: 12pt;'>arago.co | github.com/arago/python-arago-pyactionhandler</span>"
