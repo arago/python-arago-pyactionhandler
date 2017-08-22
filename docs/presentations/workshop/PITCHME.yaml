@@ -3,4 +3,4 @@ logo : docs/presentations/assets/hiro-logo.png
 highlight : solarized-dark
 slide-number: true
 footnote : "<span style='font-size: 12pt;'>arago.co | github.com/arago/python-arago-pyactionhandler</span>"
-revealjs: 3.5.0
+revealjs: 3.4.1
