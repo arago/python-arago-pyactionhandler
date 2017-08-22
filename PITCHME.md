@@ -1,6 +1,7 @@
 ---
 # HIRO ActionHandlers
 
++++
 ```python
 class CountingRhyme(object):
 	def __init__(self):
