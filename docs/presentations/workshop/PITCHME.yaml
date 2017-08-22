@@ -2,5 +2,5 @@ theme : moon
 logo : docs/presentations/assets/hiro-logo.png
 highlight : solarized-dark
 slide-number: false
-footnote : "<span style='font-size: 12pt;'>arago.co | github.com/arago/python-arago-pyactionhandler</span>"
+footnote : "<span style='font-size: 12pt;'>arago.co</span>"
 revealjs : 3.5.0
