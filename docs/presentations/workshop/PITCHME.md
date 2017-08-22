@@ -316,6 +316,8 @@ Replace USERNAME and PASSWORD with your repository credentials.
 yum install hiro_integration-python-arago-pyactionhandler
 ~~~
 
+The module includes a complete example of an external ActionHandler.
+
 ---
 
 ## Creating an external ActionHandler
