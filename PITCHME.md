@@ -6,7 +6,7 @@ What *is* and ActionHandler?
 
 +++
 ### ActionHandlers …
-- are the **hands** of the HIRO Engine |
+- are the *hands* of the HIRO Engine |
 - can execute commands or call external systems |
 - implement one or multiple “capabilities” |
 - are limited to a subset of the MARS model by their “applicability” |
@@ -14,8 +14,8 @@ What *is* and ActionHandler?
 +++
 ### Capabilities …
 - are “identifiers”, i.e. strings |
-- describe **what** an ActionHandler can do |
-- should **not** describe how an ActionHandler operates |
+- describe *what* an ActionHandler can do |
+- should *not* describe how an ActionHandler operates |
 - are “hardcoded” in the Knowledge Items |
 
 +++
