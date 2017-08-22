@@ -65,6 +65,50 @@ Which of the following examples are bad names and why?
 - <span class="fragment">describe a subset of the MARS model where an ActionHandler can be used</span>
 - <span class="fragment">same principle as the `On` section in a Knowledge Item</span>
 
++++
+
+![KnowledgeItem On section](docs/presentations/assets/screenshot_kie_on.png)
+
++++
+
+~~~xml
+<KI xmlns="https://graphit.co/schemas/v2/KiSchema">
+    <Title/>
+    <Description/>
+    <On>
+        <Description>Windows Server 2012 or newer</Description>
+        <Var Mode="string" Name="MachineClass" Value="Windows" />
+        <Var Mode="string" Name="OSName" Value="Windows Server" />
+        <Var Mode="ge" Name="OSMajorVersion" Value="6" />
+        <Var Mode="le" Name="OSMinorVersion" Value="2" />
+    </On>
+</KI>
+~~~
+
++++
+
+~~~yaml
+- Applicability:
+    - Priority: 50
+        ModelFilter:
+          - Var:
+              Name: NodeMachineClass
+              Mode: string
+              Value: Windows
+          - Var:
+              Name: OSName
+              Mode: string
+              Value: Windows Server
+          - Var:
+              Name: OSMajorVersion
+              Mode: ge
+              Value: 6
+          - Var:
+              Name: OSMinorVersion
+              Mode: le
+              Value: 2
+~~~
+
 ---
 
 ## External ActionHandlers
