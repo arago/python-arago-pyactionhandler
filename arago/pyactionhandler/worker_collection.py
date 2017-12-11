@@ -7,23 +7,23 @@ from arago.pyactionhandler.action import FailedAction
 import sys
 import logging
 import traceback
+from weakref import WeakValueDictionary
 
 class WorkerCollection(object):
 	def __init__(self, capabilities, parallel_tasks=10, parallel_tasks_per_worker=10, worker_max_idle=300):
 		self.logger = logging.getLogger('root')
 		self.capabilities=capabilities
-		self.parallel_tasks=parallel_tasks
 		self.parallel_tasks_per_worker=parallel_tasks_per_worker
 		self.worker_max_idle=worker_max_idle
-		self.workers = {}
-		self.task_queue=gevent.queue.JoinableQueue(maxsize=0)
+		self.workers = WeakValueDictionary()
+		self.task_queue=gevent.queue.JoinableQueue(maxsize=parallel_tasks)
 
 	def register_response_queue(self, response_queue):
 		self.response_queue=response_queue
 		self.logger.info("Registered worker collection for {caps}".format(caps=", ".join(self.capabilities.keys())))
 
 	def get_worker(self, NodeID):
-		if NodeID not in self.workers:
+		if NodeID not in self.workers or self.workers[NodeID].shutdown_in_progress:
 			self.workers[NodeID] = Worker(
 				self, NodeID, self.response_queue,
 				self.parallel_tasks_per_worker,
@@ -34,7 +34,11 @@ class WorkerCollection(object):
 		self.workers = {n: w for n, w in self.workers.items() if w is not worker}
 
 	def shutdown_workers(self):
-		for n,w in self.workers.items(): w.shutdown=True
+		self.task_queue.join()
+		items = list(self.workers.values())
+		for i in items:
+			i.shutdown()
+		del items
 
 	def handle_requests_per_worker(self):
 		self.logger.info("Started forwarding requests")
