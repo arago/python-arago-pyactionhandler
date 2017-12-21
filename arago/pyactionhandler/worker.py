@@ -54,7 +54,7 @@ class Worker(object):
 		if self.listener:
 			self.task_queue.put(Message("shutdown"))
 		if self.idle:
-			self.idle.kill()
+			self.idle.kill(block=False)
 
 	def handle_actions(self):
 		while True:
@@ -63,11 +63,12 @@ class Worker(object):
 				if item.msg == "shutdown":
 					break
 			else:
-				self.idle.kill()
 				self.pool.spawn(self.run_action(item))
+				self.idle.kill(block=False)
 		self.pool.join()
 		self.task_queue.task_done()
-		self.task_queue.join()
+		while not self.task_queue.join(timeout=1):
+			self.logger.debug("Worker for node {n} is waiting for its task queue to get empty ...")
 		self.logger.info("Worker for %s shutdown" % self.node)
 
 	def run_action(self, action):
@@ -87,7 +88,7 @@ class Worker(object):
 			self.logger.warning("[{anum}] Execution of {action} timed out after {to} seconds.".format(
 				anum=action.num, action=action, to=action.timeout))
 		finally:
-			self.idle.kill()
+			self.idle.kill(block=False)
 			self.task_queue.task_done()
 			self.collection.task_queue.task_done()
 			self.logger.debug("[{anum}] Removed Action from Worker queue for {node}".format(
