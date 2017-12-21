@@ -64,8 +64,8 @@ class Worker(object):
 				if item.msg == "shutdown":
 					break
 			else:
-				self.pool.spawn(self.run_action(item))
 				self.idle.kill(block=False)
+				self.pool.spawn(self.run_action, item)
 		self.pool.join()
 		self.task_queue.task_done()
 		while not self.task_queue.join(timeout=1):
