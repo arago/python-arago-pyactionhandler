@@ -32,14 +32,16 @@ class Worker(object):
 			node=self.node, time=time.strftime("%H:%M:%S", time.localtime()), size=size))
 
 	def timeout(self):
-		try:
-			gevent.sleep(self.max_idle)
-			self.shutdown()
-		except GreenletExit:
-			if not self.shutdown_in_progress:
-				self.idle=gevent.spawn(self.timeout)
-		finally:
-			gevent.idle()
+		while True:
+			try:
+				gevent.sleep(self.max_idle)
+				self.shutdown()
+				break
+			except GreenletExit:
+				if not self.shutdown_in_progress:
+					continue
+				else:
+					break
 
 	def add_action(self, action):
 		if self.shutdown_in_progress:
