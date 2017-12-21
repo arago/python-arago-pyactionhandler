@@ -1,12 +1,12 @@
-import gevent, sys
+import gevent, sys, gc
 import zmq.green as zmq
 from zmq.error import ZMQError
 from greenlet import GreenletExit
-import greenlet
 from arago.pyactionhandler.exceptions import DecodeRPCError
 from arago.pyactionhandler.protobuf.ActionHandler_pb2 import ActionRequest, ActionResponse
 import itertools
 import logging
+
 
 def decode_rpc_call(message):
 	def parse_protobuf(message):
@@ -19,11 +19,11 @@ def decode_rpc_call(message):
 				if field_type != 2:
 					raise NotImplementedError
 				field_length = message[index + 1]
-				field_data = message[index+2:field_length+index+2].decode("utf-8")
+				field_data = message[index + 2:field_length + index + 2].decode("utf-8")
 			except IndexError:
 				break
 			rpc_call.append(field_data)
-			index += field_length +2
+			index += field_length + 2
 		return rpc_call
 
 	try:
@@ -32,11 +32,12 @@ def decode_rpc_call(message):
 		raise DecodeRPCError("Message does not contain a method call")
 	return service, method
 
+
 class SyncHandler(object):
 	def __init__(self, worker_collection, zmq_url, auth=None):
 		self.logger = logging.getLogger('root')
-		self.worker_collection=worker_collection
-		self.zmq_url=zmq_url
+		self.worker_collection = worker_collection
+		self.zmq_url = zmq_url
 		self.zmq_ctx = zmq.Context()
 		self.zmq_socket = self.zmq_ctx.socket(zmq.ROUTER)
 		if auth:
@@ -50,15 +51,15 @@ class SyncHandler(object):
 		else:
 			self.logger.warn("HIRO engine interface is not encrypted!")
 		self.zmq_socket.bind(self.zmq_url)
-		self.response_queue=gevent.queue.JoinableQueue(maxsize=0)
+		self.response_queue = gevent.queue.JoinableQueue(maxsize=0)
 		self.worker_collection.register_response_queue(
 			self.response_queue)
 
 	def run(self):
-		self.input_loop=gevent.spawn(self.handle_requests)
-		self.worker_loop=gevent.spawn(self.worker_collection.handle_requests_per_worker)
-		self.output_loop=gevent.spawn(self.handle_responses)
-		self.counter=itertools.count(start=1, step=1)
+		self.input_loop = gevent.spawn(self.handle_requests)
+		self.worker_loop = gevent.spawn(self.worker_collection.handle_requests_per_worker)
+		self.output_loop = gevent.spawn(self.handle_responses)
+		self.counter = itertools.count(start=1, step=1)
 		return self.output_loop
 
 	def shutdown(self):
@@ -76,9 +77,9 @@ class SyncHandler(object):
 	def next_request(self):
 		id1, id2, svc_call, params = self.zmq_socket.recv_multipart()
 		try:
-			anum=next(self.counter)
+			anum = next(self.counter)
 			service, method = decode_rpc_call(svc_call)
-			req=ActionRequest()
+			req = ActionRequest()
 			req.ParseFromString(params)
 			params_dict = {param.key: param.value for param in req.params_list}
 			self.logger.debug("[{anum}] Decoded RPC message".format(anum=anum))
@@ -111,7 +112,7 @@ class SyncHandler(object):
 					"[{anum}] Put Action on ActionHandler request queue".format(anum=anum))
 			except UnboundLocalError:
 				pass
-			## Block all further incoming messages
+			# Block all further incoming messages
 			self.logger.info("Stopped handling requests")
 			self.worker_collection.task_queue.join()
 
@@ -119,9 +120,9 @@ class SyncHandler(object):
 		try:
 			self.logger.info("Started handling responses")
 			while True:
-				action=self.response_queue.get()
+				action = self.response_queue.get()
 				id1, id2, svc_call = action.zmq_info
-				resp=ActionResponse()
+				resp = ActionResponse()
 				resp.output = action.output
 				resp.error_text = action.error_output
 				resp.system_rc = action.system_rc
