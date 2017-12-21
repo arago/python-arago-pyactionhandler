@@ -51,6 +51,7 @@ class Worker(object):
 
 	def shutdown(self):
 		self.shutdown_in_progress = True
+		self.logger.info("Shutting down worker for {n}".format(n=self.node))
 		if self.listener:
 			self.task_queue.put(Message("shutdown"))
 		if self.idle:
