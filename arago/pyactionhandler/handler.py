@@ -86,7 +86,7 @@ class SyncHandler(object):
 			return (
 				anum, req.capability, req.time_out,
 				params_dict, (id1, id2, svc_call))
-		except (DecodeRPCError)  as e:
+		except (DecodeRPCError):
 			self.logger.error("Could not decode RPC message")
 			raise
 
@@ -104,7 +104,7 @@ class SyncHandler(object):
 				self.logger.debug(
 					"[{anum}] Put Action on ActionHandler request queue".format(anum=anum))
 				del anum, capability, timeout, params, zmq_info
-		except GreenletExit as e:
+		except GreenletExit:
 			try:
 				self.worker_collection.task_queue.put(
 					(anum, capability, timeout, params, zmq_info))
@@ -133,7 +133,7 @@ class SyncHandler(object):
 				self.response_queue.task_done()
 				self.logger.debug("[{anum}] Removed Action from ActionHandler response queue".format(
 					anum=action.num))
-		except GreenletExit as e:
+		except GreenletExit:
 			try:
 				self.zmq_socket.send_multipart((id1, id2, svc_call, resp.SerializeToString()))
 				self.response_queue.task_done()
@@ -143,4 +143,3 @@ class SyncHandler(object):
 				pass
 			self.zmq_socket.close()
 			self.logger.info("Stopped handling responses")
-
