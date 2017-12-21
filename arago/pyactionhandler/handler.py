@@ -68,6 +68,7 @@ class SyncHandler(object):
 		self.logger.info("Waiting for all workers to shutdown...")
 		while len(self.worker_collection.workers) > 0:
 			self.logger.debug("{num} worker(s) still active".format(num=len(self.worker_collection.workers)))
+			gc.collect()
 			gevent.sleep(1)
 		self.logger.info("Waiting for all responses to be delivered...")
 		self.response_queue.join()
