@@ -76,8 +76,9 @@ class SyncHandler(object):
 		self.logger.info("ActionHandler shut down, {num} actions processed".format(num=next(self.counter)-1))
 
 	def next_request(self):
-		id1, id2, svc_call, params = self.zmq_socket.recv_multipart()
+		id1, id2, *payload = self.zmq_socket.recv_multipart()
 		try:
+			svc_call, params = payload
 			anum = next(self.counter)
 			service, method = decode_rpc_call(svc_call)
 			req = ActionRequest()
@@ -87,9 +88,12 @@ class SyncHandler(object):
 			return (
 				anum, req.capability, req.time_out,
 				params_dict, (id1, id2, svc_call))
-		except (DecodeRPCError):
+		except DecodeRPCError:
 			self.logger.error("Could not decode RPC message")
 			raise
+		except ValueError:
+			self.logger.error("The HIRO Engine sent us an empty message!")
+			raise DecodeRPCError("The HIRO Engine sent us an empty message!")
 
 	def handle_requests(self):
 		try:
