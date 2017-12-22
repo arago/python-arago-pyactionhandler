@@ -19,6 +19,7 @@ from docopt import docopt
 from arago.pyactionhandler.protobuf.ActionHandler_pb2 import ActionRequest, ActionResponse
 from arago.pyactionhandler.protobuf.CommonTypes_pb2 import KeyValueMessage
 
+
 def encode_rpc_call(*args):
 	rpc_call = b''
 	for arg in args:
