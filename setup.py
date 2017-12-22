@@ -9,7 +9,7 @@ name = 'arago-pyactionhandler'
 
 distutils.core.setup(
 	name = "arago-pyactionhandler",
-	version = "2.4",
+	version = "2.5",
 	author = "Marcus Klemm",
 	author_email = "mklemm@arago.de",
 	description = ("Python module for Arago HIRO ActionHandlers"),
