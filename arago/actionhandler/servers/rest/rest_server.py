@@ -31,13 +31,16 @@ class RestServer(Source):
 	def __init__(self, endpoint, app, certfile=None, keyfile=None, *args, **kwargs):
 		self._logger = logging.getLogger('root')
 		self._endpoint=urlparse(endpoint)
+		if certfile and keyfile:
+			ssl_args = {'certfile': certfile, 'keyfile': keyfile}
+		else:
+			ssl_args = {}
 		server = gevent.pywsgi.WSGIServer(
 			(self._endpoint.hostname, self._endpoint.port),
 			app,
-			keyfile=keyfile,
-			certfile=certfile,
 			log=gevent.pywsgi.LoggingLogAdapter(self._logger, level=self._logger.VERBOSE),
-			error_log=self._logger)
+			error_log=self._logger,
+			**ssl_args)
 		super().__init__(server, *args, **kwargs)
 
 class HIROEngineSyncRESTInterface(RestServer):
