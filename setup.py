@@ -21,5 +21,5 @@ distutils.core.setup(
 	],
 	packages=['arago.actionhandler.servers.rest',
 	],
-	install_requires=['gevent', 'falcon', 'fastjsonschema', 'gevent-tiny-actorsystem']
+	install_requires=['gevent', 'falcon', 'fastjsonschema', 'git+https://github.com/arago/gevent-tiny-actorsystem']
 )
