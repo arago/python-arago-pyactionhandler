@@ -76,4 +76,9 @@ class HIROEngineSyncRESTInterface(RestServer):
 				}
 				resp.status = falcon.HTTP_200
 			except Exception as e:
-				raise falcon.HTTPInternalServerError(description=str(e))
+				#raise falcon.HTTPInternalServerError(description=str(e))
+				resp.status = falcon.HTTP_200
+				resp.media = {
+					'status': 'done',
+					'result': {'exec': str(e)}
+				}
